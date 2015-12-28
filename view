@@ -1,0 +1,45 @@
+#!/bin/bash
+ROOT_PWD=root
+
+if [ $# -lt 1 ]; then
+  echo "Need a dump file"
+  exit 1
+fi
+if [ -z $DOCKER_HOST ]; then
+  echo "Warning: if you're on OSX you'll need to be running in the Docker quickstart term"
+fi
+eval "$(docker-machine env default)"
+
+dump="$1"
+IP=$( docker-machine ip default )
+
+if ! $( docker ps | grep -q "dump_db$" ); then
+  # create the data container
+  docker create --name dump_data -v /var/lib/mysql mysql
+
+  # run the sql server
+  docker run --name dump_db \
+    --volumes-from dump_data -v /var/lib/mysql:/var/lib/mysql \
+    -e MYSQL_USER=mysql -e MYSQL_PASSWORD=mysql \
+    -e MYSQL_DATABASE=dump -e MYSQL_ROOT_PASSWORD=$ROOT_PWD \
+    -it -p 3306:3306 -d mysql
+
+  # wait for it to be up and running...
+  mysql_port=$( docker port dump_db | grep "3306/tcp" | awk -F: '{print $2;}' )
+  while ! curl http://$IP:$mysql_port/
+  do
+    echo "waiting for mysql server..."
+    sleep 1
+  done
+fi
+
+# upload the dump
+docker exec -i dump_db mysql -uroot -p$ROOT_PWD dump < $dump
+
+if ! $( docker ps | grep -q "dump_phpmyadmin$" ); then
+  # run phpmyadmin
+  docker run -d --link dump_db:mysql -e MYSQL_USERNAME=root --name dump_phpmyadmin -p 80 ahebrank/phpmyadmin
+fi
+
+web_port=$( docker port dump_phpmyadmin | grep "80/tcp" | awk -F: '{print $2;}' )
+open "http://$IP:$web_port/db_structure.php?server=1&db=dump"

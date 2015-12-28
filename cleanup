@@ -1,0 +1,4 @@
+#!/bin/bash
+docker rm -f dump_data
+docker rm -f dump_db
+docker rm -f dump_phpmyadmin
