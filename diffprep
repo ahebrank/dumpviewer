@@ -13,13 +13,9 @@ dump="$1"
 run_db_container
 wait_for_port $MYSQL_PORT
 
+# upload the dump
 docker exec -i dump_db mysql -h localhost -uroot -p$ROOT_PWD dump < $dump
 
-if ! $( docker ps | grep -q "dump_phpmyadmin$" ); then
-  # run phpmyadmin
-  docker run -d --link dump_db:mysql -e MYSQL_USERNAME=root --name dump_phpmyadmin -p $WEB_PORT:80 ahebrank/phpmyadmin
-fi
-
-wait_for_port $WEB_PORT
-
-open "http://localhost:$WEB_PORT/db_structure.php?server=1&db=dump"
+# reexport
+output=$( echo $dump | sed 's/\.sql/-clean.sql/' )
+docker exec -i dump_db mysqldump -h localhost -uroot -p$ROOT_PWD --skip-opt dump > $output
