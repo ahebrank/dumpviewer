@@ -4,22 +4,10 @@ if [ $# -lt 1 ]; then
   exit 1
 fi
 
-DIR="${BASH_SOURCE%/*}"
-if [[ ! -d "$DIR" ]]; then DIR="$PWD"; fi
-. "$DIR/common.sh"
+docker-compose up -d
 
-dump="$1"
+./wait_for_port 9906
+./upload "$1"
+./wait_for_port 9980
 
-run_db_container
-wait_for_port $MYSQL_PORT
-
-docker exec -i dump_db mysql -h localhost -uroot -p$ROOT_PWD dump < $dump
-
-if ! $( docker ps | grep -q "dump_phpmyadmin$" ); then
-  # run phpmyadmin
-  docker run -d --link dump_db:mysql -e MYSQL_USERNAME=root --name dump_phpmyadmin -p $WEB_PORT:80 ahebrank/phpmyadmin
-fi
-
-wait_for_port $WEB_PORT
-
-open "http://localhost:$WEB_PORT/db_structure.php?server=1&db=dump"
+open "http://localhost:9980/db_structure.php?server=1&db=dump"
