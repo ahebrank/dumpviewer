@@ -1,0 +1,26 @@
+version: "3"
+
+services:
+  database:
+    image: mysql
+    environment:
+      - MYSQL_USER=mysql
+      - MYSQL_PASSWORD=mysql
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=dump
+    ports:
+      - "9906:3306"
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      - MYSQL_USER=mysql
+      - MYSQL_PASSWORD=mysql
+      - MYSQL_ROOT_PASSWORD=root
+      - PMA_USER=mysql
+      - PMA_PASSWORD=mysql
+    links:
+      - "database:db"
+    ports:
+      - "9980:80"
+    

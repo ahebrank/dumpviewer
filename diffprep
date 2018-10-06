@@ -4,18 +4,10 @@ if [ $# -lt 1 ]; then
   exit 1
 fi
 
-DIR="${BASH_SOURCE%/*}"
-if [[ ! -d "$DIR" ]]; then DIR="$PWD"; fi
-. "$DIR/common.sh"
-
-dump="$1"
-
-run_db_container
-wait_for_port $MYSQL_PORT
-
-# upload the dump
-docker exec -i dump_db mysql -h localhost -uroot -p$ROOT_PWD dump < $dump
+docker-compose up -d
+./wait_for_port 9906
+./upload "$1"
 
 # reexport
-output=$( echo $dump | sed 's/\.sql/-clean.sql/' )
-docker exec -i dump_db mysqldump -h localhost -uroot -p$ROOT_PWD --skip-opt dump > $output
+output=$( echo "$1" | sed 's/\.sql/-clean.sql/' )
+docker-compose exec -T database mysqldump -uroot -proot --skip-opt dump > $output

@@ -1,0 +1,8 @@
+#!/bin/bash
+if [ $# -lt 1 ]; then
+  echo "Need a dumpfile."
+  exit 1
+fi
+echo -n "uploading database..."
+docker-compose exec -T database sh -c "mysql -u root -proot dump" < $1
+echo
