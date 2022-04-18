@@ -10,4 +10,4 @@ docker-compose up -d
 ./upload "$1"
 ./wait_for_container phpmyadmin
 
-open "http://localhost:9980/db_structure.php?server=1&db=dump"
+open "http://localhost:9980/index.php?route=/database/sql&db=dump"
