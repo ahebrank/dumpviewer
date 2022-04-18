@@ -1,0 +1,8 @@
+#!/bin/bash
+echo -n "waiting for container $1"
+# `docker compose ps --services` prints just the filtered service names; so if we get the name out, the service matches the filter, i.e. 'running'.
+while [ "`docker-compose ps --status running --services $1`" != "$1" ]; do
+  echo -n "."
+  sleep 1
+done
+echo

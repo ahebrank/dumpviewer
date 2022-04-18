@@ -5,7 +5,7 @@ if [ $# -lt 1 ]; then
 fi
 
 docker-compose up -d
-./wait_for_port 9906
+./wait_for_container database
 ./upload "$1"
 
 # reexport
