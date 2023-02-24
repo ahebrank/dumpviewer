@@ -8,6 +8,8 @@ services:
       - MYSQL_PASSWORD=mysql
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_DATABASE=dump
+    volumes:
+      - ./config-file.cnf:/etc/mysql/conf.d/innodb.cnf
     ports:
       - "9906:3306"
 

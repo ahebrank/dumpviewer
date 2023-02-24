@@ -4,5 +4,5 @@ if [ $# -lt 1 ]; then
   exit 1
 fi
 echo -n "uploading database..."
-docker-compose exec -T database sh -c "mysql -u root -proot dump" < $1
+docker-compose exec -T database sh -c "mysql -u root -proot -h 127.0.0.1 dump" < $1
 echo
