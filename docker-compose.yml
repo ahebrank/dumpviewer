@@ -2,20 +2,21 @@ version: "3"
 
 services:
   database:
-    image: mysql
+    image: mariadb
     environment:
       - MYSQL_USER=mysql
       - MYSQL_PASSWORD=mysql
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_DATABASE=dump
     volumes:
-      - ./config-file.cnf:/etc/mysql/conf.d/innodb.cnf
+      - ./innodb.cnf:/etc/mysql/conf.d/innodb.cnf
     ports:
       - "9906:3306"
     healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
-      timeout: 2s
-      retries: 20
+      test: "/usr/bin/mysql --user=root --password=root --execute \"SHOW DATABASES;\""
+      interval: 2s
+      timeout: 20s
+      retries: 10
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin

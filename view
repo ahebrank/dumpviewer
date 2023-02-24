@@ -3,6 +3,10 @@ if [ $# -lt 1 ]; then
   echo "Need a dump file"
   exit 1
 fi
+if [ ! -f $1 ]; then
+  echo "Unable to load dump file"
+  exit 1
+fi
 
 docker-compose up -d
 
