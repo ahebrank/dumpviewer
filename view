@@ -6,8 +6,6 @@ fi
 
 docker-compose up -d
 
-./wait_for_container database
 ./upload "$1"
-./wait_for_container phpmyadmin
 
 open "http://localhost:9980/index.php?route=/database/sql&db=dump"

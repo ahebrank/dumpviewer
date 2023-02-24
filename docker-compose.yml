@@ -12,6 +12,10 @@ services:
       - ./config-file.cnf:/etc/mysql/conf.d/innodb.cnf
     ports:
       - "9906:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 2s
+      retries: 20
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
@@ -26,3 +30,6 @@ services:
       - "database:db"
     ports:
       - "9980:80"
+    depends_on:
+      database:
+        condition: service_healthy
