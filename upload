@@ -5,8 +5,8 @@ if [ $# -lt 1 ]; then
 fi
 echo -n "uploading database..."
 if command -v pv >/dev/null 2>&1; then
-  pv $1 | docker-compose exec -T database sh -c "mysql -u root -proot -h 127.0.0.1 dump"
+  pv $1 | docker-compose exec -T database sh -c "mariadb -u root -proot -h 127.0.0.1 dump"
 else 
-  docker-compose exec -T database sh -c "mysql -u root -proot -h 127.0.0.1 dump" < $1
+  docker-compose exec -T database sh -c "mariadb -u root -proot -h 127.0.0.1 dump" < $1
 fi
 echo
